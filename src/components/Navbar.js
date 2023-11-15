@@ -49,7 +49,10 @@ const Navbar = ({ auth }) => {
                   <li className={`${pathname === "/contact-us" ? 'current' : ""} dropdown`}><Link to="/contact-us">Contact</Link></li>
                   <li className={`${pathname === "/all-notification" ? 'current' : ""} dropdown`}><Link to="/chat"><BsFillChatRightDotsFill /></Link></li>
                   <li className="dropdown"><Notification /></li>
-                  <li className={`${pathname === "/profile" ? 'current' : ""} dropdown`}><Link to="/profile" style={{ fontSize: '20px' }}><BsPersonCircle /></Link></li>
+                  <li className={`${pathname === "/profile" ? 'current' : ""} dropdown`}>
+                   
+                    <Link to="/profile" style={{ fontSize: '20px' }}><BsPersonCircle /></Link>
+                    </li>
                 </ul>
               </div>
             </nav>

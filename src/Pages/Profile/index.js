@@ -75,6 +75,11 @@ const Profile = () => {
         if (profileImage.status_code === 200 && imageUpdateCount > 0) {
             toastify(toast.success, "Profile image update successful.")
         }
+        else if(profileImage.response){
+            // if (profileImage.response.data.detail){
+                toastify(toast.error, "Please select images with a clear face.")
+            // }
+        }
     }, [profileImage])
 
     return (

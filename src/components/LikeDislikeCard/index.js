@@ -8,6 +8,7 @@ import { getLocalStorage } from '../../Utils/LocalStorage'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const LikeDislikeCard = () => {
+    const [wait, setWait] = useState(true);
     const { state } = useLocation();
     const navigate = useNavigate()
     if (state == null) {
@@ -24,6 +25,8 @@ const LikeDislikeCard = () => {
         maxweight: "",
         miniincome: "",
         maxincome: "",
+        skintone: "",
+        maritalstatus: "",
     })
     const [frame, setFrame] = useState(null)
     const [current, setCurrent] = useState(null)
@@ -45,6 +48,7 @@ const LikeDislikeCard = () => {
     }, [])
 
     useEffect(() => {
+        console.log('advanceSearchRes>>>', advanceSearchRes, 'allSearchData>>>', allSearchData, 'allProfile>>>', allProfile)
         if (!!advanceSearchRes?.length) {
             setAllProfilesData(advanceSearchRes)
         }
@@ -89,6 +93,7 @@ const LikeDislikeCard = () => {
                 setCurrent(getChild)
                 setLikeText(getChild.children[0])
             }
+            setWait(false);
         }
     }, [frame, allProfilesData])
     useEffect(() => {
@@ -108,7 +113,6 @@ const LikeDislikeCard = () => {
                 <span>${data.age}</span>
                 </div>
                 <div class="info">
-                ${data.distance} miles away <br/>
                 User ID: ${data.custom_id}
                 </div>
             </div>
@@ -197,12 +201,10 @@ const LikeDislikeCard = () => {
             // if (currentCardIndex < allProfilesData.length - 1) {
             //     setCurrentCardIndex(currentCardIndex + 1);
             // }
-            console.log("helloooooo")
         } else {
             const currentUserProfileData = allProfilesData[currentCardIndex];
             const userId = currentUserProfileData.user_id;
             dispatch(sendFriendRequest(userId, true))
-            // console.log("byeeeeeeeee")
         }
 
     })
@@ -221,6 +223,7 @@ const LikeDislikeCard = () => {
         })
     }
     const handleAdvanceSearch = (e) => {
+        setWait(true);
         e.preventDefault()
         let userId = getLocalStorage('user_id');
         let req = state.searchByFilter;
@@ -230,7 +233,8 @@ const LikeDislikeCard = () => {
                 req += element + '=' + advanceSearch[element];
             }
         });
-        dispatch(advanceSearchh(req))
+        // dispatch(advanceSearchh(req))
+        dispatch(getSearchProfileUser(req))
     }
 
     useEffect(() => {
@@ -260,11 +264,12 @@ const LikeDislikeCard = () => {
                                                 //    onSubmit={handleSearchSubmit}
                                                 >
                                                     <div className="col-md-12 form-group">
-                                                        <label className="label" htmlFor="lookingfor"><span className="search">Start Height</span></label>
+                                                        <label className="label" htmlFor="lookingfor"><span className="search">Min Height(Cm)</span></label>
                                                         <select className="dropselect" name="startheight"
                                                             value={advanceSearch.startheight}
                                                             onChange={handleSearch}
                                                         >
+                                                            <option value="" selected disabled hidden>Select</option>
                                                             <option value="150">150</option>
                                                             <option value="151">151</option>
                                                             <option value="152">152</option>
@@ -310,7 +315,7 @@ const LikeDislikeCard = () => {
                                                         {/* <p className="form-text " style={{ color: "red" }}>{(!searchData.looking_for && error) ? "Looking for is Required" : ""}</p> */}
                                                     </div>
                                                     <div className="col-md-12 form-group">
-                                                        <label className="label" htmlFor="lookingfor"><span className="search">End Height</span></label>
+                                                        <label className="label" htmlFor="lookingfor"><span className="search">Max Height(Cm)</span></label>
                                                         <select className="dropselect" id="fromage"
                                                             onChange={handleSearch}
                                                             value={advanceSearch.endheight}
@@ -377,12 +382,13 @@ const LikeDislikeCard = () => {
                                                         {/* <p className="form-text " style={{ color: "red" }}>{(!searchData.to_age && error) ? "To age is Required" : ""}</p> */}
                                                     </div>
                                                     <div className="col-md-12 form-group">
-                                                        <label className="label" htmlFor="lookingfor"><span className="search" >Min Weight</span></label>
+                                                        <label className="label" htmlFor="lookingfor"><span className="search" >Min Weight(Kg)</span></label>
                                                         <select className="dropselect"
                                                             value={advanceSearch.minweight}
                                                             name="minweight" id="weight"
                                                             onChange={handleSearch}
                                                             required>
+                                                            <option value="" selected disabled hidden>Select</option>
                                                             {!!weight.length && weight.map((item, index) => {
                                                                 return <option value={item} key={index}>{item}</option>
                                                             })}
@@ -391,12 +397,13 @@ const LikeDislikeCard = () => {
                                                         {/* <p className="form-text " style={{ color: "red" }}>{(!searchData.religion && error) ? "Religion is Required" : ""}</p> */}
                                                     </div>
                                                     <div className="col-md-12 form-group">
-                                                        <label className="label" htmlFor="lookingfor"><span className="search" >Max Weight</span></label>
+                                                        <label className="label" htmlFor="lookingfor"><span className="search" >Max Weight(Kg)</span></label>
                                                         <select className="dropselect"
                                                             value={advanceSearch.maxweight}
                                                             name="maxweight" id="weight"
                                                             onChange={handleSearch}
                                                             required>
+                                                            <option value="" selected disabled hidden>Select</option>
                                                             {!!weight.length && weight.map((item, index) => {
                                                                 return <option value={item} key={index}>{item}</option>
                                                             })}
@@ -411,6 +418,7 @@ const LikeDislikeCard = () => {
                                                             name="miniincome" id="weight"
                                                             onChange={handleSearch}
                                                             required>
+                                                            <option value="" selected disabled hidden>Select</option>
                                                             {!!income.length && income.map((item, index) => {
                                                                 return <option value={item} key={index}>{item}</option>
                                                             })}
@@ -425,9 +433,38 @@ const LikeDislikeCard = () => {
                                                             name="maxincome" id="weight"
                                                             onChange={handleSearch}
                                                             required>
+                                                            <option value="" selected disabled hidden>Select</option>
                                                             {!!income.length && income.map((item, index) => {
                                                                 return <option value={item} key={index}>{item}</option>
                                                             })}
+
+                                                        </select>
+                                                        {/* <p className="form-text " style={{ color: "red" }}>{(!searchData.religion && error) ? "Religion is Required" : ""}</p> */}
+                                                    </div>
+                                                    <div className="col-md-12 form-group">
+                                                        <label className="label" htmlFor="lookingfor"><span className="search" >Skin Tone</span></label>
+                                                        <select className="dropselect"
+                                                            value={advanceSearch.skintone}
+                                                            name="skintone" id="skintone"
+                                                            onChange={handleSearch}
+                                                            required>
+                                                            <option value="" selected disabled hidden>Select</option>
+                                                            <option value="skin">fair</option>
+                                                            <option value="tone">Brown</option>
+
+                                                        </select>
+                                                        {/* <p className="form-text " style={{ color: "red" }}>{(!searchData.religion && error) ? "Religion is Required" : ""}</p> */}
+                                                    </div>
+                                                    <div className="col-md-12 form-group">
+                                                        <label className="label" htmlFor="lookingfor"><span className="search" >Maritial status</span></label>
+                                                        <select className="dropselect"
+                                                            value={advanceSearch.maritalstatus}
+                                                            name="maritalstatus" id="maritalstatus"
+                                                            onChange={handleSearch}
+                                                            required>
+                                                            <option value="" selected disabled hidden>Select</option>
+                                                            <option value="status">single</option>
+                                                            <option value=" status">divorce</option>
 
                                                         </select>
                                                         {/* <p className="form-text " style={{ color: "red" }}>{(!searchData.religion && error) ? "Religion is Required" : ""}</p> */}
@@ -444,12 +481,18 @@ const LikeDislikeCard = () => {
                             </div>
                         </section>
                         </div>
-                        <div class="col-md-7 m-auto">
+                        <div class="col-md-7  cards-one">
                             {allProfilesData?.length == 0 &&
                                 <>
                                     <div>
-                                        <b>Sorry No Data at the moment <br />
-                                            Please try again later</b>
+                                        {wait ?
+                                        <div class="d-flex justify-content-center">
+                                            <div class="spinner-border" role="status">
+                                            <span class="visually-hidden"></span>
+                                            </div>
+                                        </div>
+                                        : <b>Sorry No Data at the moment <br />
+                                            Please try again later</b>}
                                     </div>
                                 </>}
                             <div class="frame"></div>

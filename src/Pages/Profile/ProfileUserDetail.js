@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import "./Profile.css"
 import Layout from '../../Layout';
 import { firstNameAndLastNameValidation } from '../../Utils/Validation';
@@ -6,12 +6,14 @@ import defaultImage from "../../assets/images/background/bg.jpg"
 import { IoIosAlert } from "react-icons/io"
 import { useDispatch, useSelector } from 'react-redux';
 import { getLocalStorage, removeLocalStorage } from '../../Utils/LocalStorage';
-import { ProfilePost, getProfile, getProfileImage, getuser, uploadProfileImage } from '../../Redux/Actions/ProfileActions';
+import { ProfilePost, getProfile, getProfileImage, getuser, uploadProfileImage, verifyDocument } from '../../Redux/Actions/ProfileActions';
 import { toast } from 'react-toastify';
 import { toastify } from '../../Utils/Function';
 import { useNavigate } from 'react-router-dom';
 
 const ProfileUserDetail = () => {
+    const [idVerify, setIdVerify] = useState(false)
+    const inputRef = useRef(null)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const profileState = useSelector((state) => state.Profile)
@@ -32,6 +34,7 @@ const ProfileUserDetail = () => {
 
     })
     const [profileImage, setProfileImage] = useState(null)
+    const [idDocument, setIdDocument] = useState(null)
     const [file, setFile] = useState(null)
     const [error, setError] = useState(false)
 
@@ -80,9 +83,10 @@ const ProfileUserDetail = () => {
         // && profileData.caste?.length > 4
         // && profileData.headline?.length > 5
         // && profileData.occupation?.length > 4 &&
+        // console.log('profileData>>>', profileData)
 
         if (
-            !!profileImage?.name?.length) {
+            !!profileImage?.name?.length && !!idDocument?.name?.length && profileData.height && profileData.weight && profileData.marital_status && profileData.headline && profileData.caste && profileData.occupation && profileData.education && profileData.income && profileData.about_me) {
             dispatch(uploadProfileImage(profileImage))
             dispatch(ProfilePost(profileData))
         } else {
@@ -108,6 +112,31 @@ const ProfileUserDetail = () => {
         }
     }
 
+    const handleIdProof = (e) => {
+        let { files } = e.target;
+        const imageType = files[0].name.split(".")[1]
+        if (imageType === "JPEG" ||
+            imageType === "PNG" ||
+            imageType === "png" ||
+            imageType === "jpeg" ||
+            imageType === "jpg" ||
+            imageType === "JPG" ||
+            imageType === "gif") {
+            let image = files[0]
+            setIdDocument(image)
+            dispatch(verifyDocument(image))
+            .then(response => {
+                setIdVerify(true);
+                toastify(toast.success, 'Document uploaded successfully.')
+            })
+            .catch(error => {
+            });
+
+        } else {
+            toastify(toast.info, 'Please select valid ID Proof.')
+        }
+    }
+
     return (
         <Layout>
             <div className='user_profile' style={{ padding: "100px 0" }}>
@@ -115,21 +144,18 @@ const ProfileUserDetail = () => {
                 <div class="row">
                     <div class="image-container col-lg-4 col-sm-12">
                         <div className='bg-main mt-2'>
-                        
                         <div class="avatar-upload">
                             <div class="avatar-edit kils">
-                                <input type='file' id="imageUpload" accept="image/*" onChange={handleProfileImage} />
-                                <label for="imageUpload " className='pensil' ><i class="fa fa-camera" aria-hidden="true"></i>
-</label>
+                                <input type='file' id="imageUpload" accept="image/*" ref={inputRef} onChange={handleProfileImage} />
+                                <label for="imageUpload " className='pensil' onClick={() => inputRef.current.click()} ><i class="fa fa-camera" aria-hidden="true"></i></label>
                             </div>
                             <div class="avatar-preview">
                                 <div id="imagePreview" style={{ backgroundImage: `url(${file || defaultImage})` }}>
                                 </div>
-                               
                             </div>
                             <div className='text-center'>
                                 <h1>Profile Image Upload
-                        </h1>                                                                                                                                                                                                                                                                                                                                                                                                        
+                        </h1>
                                 </div>
                         </div>
                         <p className="form-text text-center mt-3" style={{ color: "red" }}>{(!profileImage?.name?.length && error) ? "Profile Image is Required" : ""}</p>
@@ -140,26 +166,38 @@ const ProfileUserDetail = () => {
                         <form method="post" action="emailsend" id="contact-form" onSubmit={(e) => handleProfleInfo(e)} encType="multipart/form-data">
                             <div className="row clearfix">
 
-                                <div className="col-md-6 form-group">
-                                    <input  type="number" maxlength="35" placeholder="Height (Optional)" name="height" tabindex="3" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.height && error) ? "Height is Required" : ((profileData.height + "")?.length == 1 && error) ? "Invalid Height." : ""}</p> */}
+                                <div class="col-md-6 form-group">
+                                    {idVerify ?
+                                    <p className='text-center'>Document verification under process.</p>
+                                    :
+                                    <>
+                                        <input type='file' id="imageUpload" accept="image/*" onChange={handleIdProof} />
+                                        <label for="imageUpload " className='pensil'>ID Proof</label>
+                                    </>
+                                    }
+                                <p className="form-text text-center mt-3" style={{ color: "red" }}>{(!idDocument?.name?.length && error) ? "Government aproved photo id card is Required(Aadhar Card/DL/Pan Card)" : ""}</p>
                                 </div>
 
                                 <div className="col-md-6 form-group">
-                                    <input type="number" name="weight" maxlength="70" placeholder="Weight (Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.weight && error) ? "Weight is Required" : ((profileData.weight + "").length == 1 && error) ? "Invalid Weight." : ""}</p> */}
+                                    <input  type="number" maxlength="35" placeholder="Height(Cm)" name="height" tabindex="3" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.height && error) ? "Height is Required" : ((profileData.height + "")?.length == 1 && error) ? "Invalid Height." : ""}</p>
+                                </div>
+
+                                <div className="col-md-6 form-group">
+                                    <input type="number" name="weight" maxlength="70" placeholder="Weight" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.weight && error) ? "Weight is Required" : ((profileData.weight + "").length == 1 && error) ? "Invalid Weight." : ""}</p>
                                 </div>
                                 <div className="col-md-6 form-group">
                                     <select className="custom-select-box" name="marital_status" tabindex="7" id="MaritalStatus" onChange={(e) => handleProfilePersonalInfo(e)}>
-                                        <option value="" disabled selected hidden>Marital Status (Optional)</option>
+                                        <option value="" disabled selected hidden>Marital Status</option>
                                         <option value="single">Single</option>
                                         <option value="Widowed">Widowed</option>
                                         <option value="Divorced">Divorced</option>
                                         <option value="Separated">Separated</option>
                                         <option value="Registered partnership">Registered partnership</option>
                                     </select>
+                                <p className="form-text " style={{ color: "red" }}>{(!profileData.marital_status?.length && error) ? "Marital Status is Required" : ""}</p>
                                 </div>
-                                {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.marital_status?.length && error) ? "Marital Status is Required" : ""}</p> */}
                                 <div className="col-md-6 form-group">
                                     <input type="text" name="hobbies" maxlength="70" placeholder="Hobbies(Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
                                 </div>
@@ -167,34 +205,34 @@ const ProfileUserDetail = () => {
                                     <input type="button" value="Add Hobbies" style={{ width: "100%", height: "100%" }} onClick={(e) => handleHobbies(e)} />
                                 </div> */}
                                 <div className="col-md-6 form-group">
-                                    <input type="text" name="headline" maxlength="70" placeholder="Headline (Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.headline.length && error) ? "Headline is Required" : (profileData.headline.length < 6 && error) ? "Invalid Headline. " : ""}</p> */}
+                                    <input type="text" name="headline" maxlength="70" placeholder="Headline" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.headline.length && error) ? "Headline is Required" : (profileData.headline.length < 6 && error) ? "Invalid Headline. " : ""}</p>
                                 </div>
                                 <div className="col-md-6 form-group">
-                                    <input type="text" name="caste" maxlength="70" placeholder="Caste (Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.caste.length && error) ? "Caste is Required" : (profileData.caste.length < 4 && error) ? "Invalid caste." : ""}</p> */}
+                                    <input type="text" name="caste" maxlength="70" placeholder="Caste" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.caste.length && error) ? "Caste is Required" : (profileData.caste.length < 4 && error) ? "Invalid caste." : ""}</p>
                                 </div>
                                 <div className="col-md-6 form-group">
-                                    <input type="text" name="occupation" maxlength="70" placeholder="Occupation (Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.occupation.length && error) ? "Occupation is Required" : (profileData.occupation.length < 5 && error) ? "Invalid Occupation." : ""}</p> */}
+                                    <input type="text" name="occupation" maxlength="70" placeholder="Occupation" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.occupation.length && error) ? "Occupation is Required" : (profileData.occupation.length < 5 && error) ? "Invalid Occupation." : ""}</p>
                                 </div>
                                 <div className="col-md-6 form-group">
-                                    {/* <select className="custom-select-box" name="education" tabindex="7" id="education" onChange={(e) => handleProfilePersonalInfo(e)}>
-                                        <option value="" disabled selected hidden>Education (Optional)</option>
+                                    <select className="custom-select-box" name="education" tabindex="7" id="education" onChange={(e) => handleProfilePersonalInfo(e)}>
+                                        <option value="" disabled selected hidden>Education</option>
                                         <option value="bachelor">Bachelor's</option>
                                         <option value="master">Master</option>
                                         <option value="phd">Phd</option>
-                                    </select> */}
-                                    <input type="text" name="education" maxlength="70" placeholder="Education (Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.education.length && error) ? "education is Required" : ""}</p> */}
+                                    </select>
+                                    {/* <input type="text" name="education" maxlength="70" placeholder="Education" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} /> */}
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.education.length && error) ? "education is Required" : ""}</p>
                                 </div>
                                 <div className="col-lg-12 col-md-12 col-sm-12 form-group">
-                                    <input type="number" name="income" maxlength="70" placeholder="Income (Optional)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.income.length && error) ? "income is Required" : ""}</p> */}
+                                    <input type="number" name="income" maxlength="70" placeholder="Income" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.income.length && error) ? "income is Required" : ""}</p>
                                 </div>
                                 <div className="col-lg-12 col-md-12 col-sm-12 form-group">
-                                    <textarea name="about_me" maxlength="250" placeholder="About me (Optional)" tabindex="5" onChange={(e) => handleProfilePersonalInfo(e)}></textarea>
-                                    {/* <p className="form-text " style={{ color: "red" }}>{(!profileData.about_me.length && error) ? "About Me is Required" : (profileData.about_me.length < 5 && error) ? "Invalid About Me." : ""}</p> */}
+                                    <textarea name="about_me" maxlength="250" placeholder="About me" tabindex="5" onChange={(e) => handleProfilePersonalInfo(e)}></textarea>
+                                    <p className="form-text " style={{ color: "red" }}>{(!profileData.about_me.length && error) ? "About Me is Required" : (profileData.about_me.length < 5 && error) ? "Invalid About Me." : ""}</p>
                                 </div>
                                 <div className="col-md-12 text-right">
                                     <a><button className="btn btn-primary mt-4 mb-4" type="submit" name="submit" > <span tabindex="11" className="btn-title">Submit  </span></button></a>

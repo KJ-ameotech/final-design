@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { getLocalStorage } from '../../Utils/LocalStorage';
 import { updateAboutData } from '../../Redux/Actions/ProfileActions';
@@ -7,6 +7,9 @@ const AboutMe = ({ profileUserData }) => {
     const dispatch = useDispatch();
     const [isEdit, setIsEdit] = useState(false)
     let [aboutData, setAboutData] = useState();
+    useEffect(()=>{
+        setAboutData(profileUserData.about_me);
+    }, [profileUserData.about_me])
 
     const handleAboutData = (e) => {
         const value = e.target.value;
@@ -26,28 +29,27 @@ const AboutMe = ({ profileUserData }) => {
                 </span>
                 <h6 className="ml-3 ">About me</h6>
                 </div>
-        
+
                 <div>
                     <button className='btn btn-primary' onClick={() => {
                         setIsEdit(true)
-                        setAboutData(profileUserData.about_me)
                     }}>
                         Edit About
                     </button>
                 </div>
             </div>
-            <div className="border-bottom-line mx-4 my-4"></div>
+            <div className="border-bottom-line my-4"></div>
             <div className="profile-image">
                 {isEdit ?
                     <>
-                        <input type="text" name="name" placeholder='About me' value={aboutData} onChange={handleAboutData} />
+                    <textarea type="text" className='about-me'  placeholder='About me' value={aboutData} onChange={handleAboutData} />
                         <div className='btn-box text-right'>
                             <button className='btn btn-primary mx-2' onClick={handleSaveEditAboutData} >Save</button>
                             <button className='btn btn-secondary mx-2' onClick={() => setIsEdit(false)} >Cancel</button>
                         </div>
                     </>
                     :
-                    <p className='desh'>{profileUserData.about_me}</p>}
+                    <p className='desh'>{aboutData}</p>}
             </div>
         </div>
     )

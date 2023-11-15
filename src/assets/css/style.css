@@ -12811,3 +12811,23 @@ button.sub-btn{
     border-radius: 28px;
     border: 0.3px solid #cc003726;
 }
+.cards-one {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	margin-top: 0;
+}
+p.desh {
+	text-align: start;
+    word-break: break-all;
+}
+textarea.about-me{
+	width: 100%;
+}
+div.document-verified{
+	padding: 13px;
+}
+.d-verify-tick{
+	color: green;
+}

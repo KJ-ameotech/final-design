@@ -156,7 +156,6 @@ const Login = () => {
                                                     >
                                                         <input
                                                             type="checkbox"
-                                                            checked
                                                             style={{ verticalAlign: `middle` }}
                                                         />
                                                     </label>
