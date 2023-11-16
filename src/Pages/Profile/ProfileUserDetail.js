@@ -10,6 +10,8 @@ import { ProfilePost, getProfile, getProfileImage, getuser, uploadProfileImage, 
 import { toast } from 'react-toastify';
 import { toastify } from '../../Utils/Function';
 import { useNavigate } from 'react-router-dom';
+import { Api } from "../../Utils/ApiUrl";
+import axios from "axios";
 
 const ProfileUserDetail = () => {
     const [idVerify, setIdVerify] = useState(false)
@@ -18,6 +20,7 @@ const ProfileUserDetail = () => {
     const navigate = useNavigate()
     const profileState = useSelector((state) => state.Profile)
     const { postProfileData, uploadImageRes: { response } } = profileState
+    const [profileDone, setProfileDone] = useState(false)
     const [profileData, setProfileData] = useState({
         height: "",
         weight: "",
@@ -38,20 +41,44 @@ const ProfileUserDetail = () => {
     const [file, setFile] = useState(null)
     const [error, setError] = useState(false)
 
+    // useEffect(() => {
+    //     if (postProfileData != null) {
+    //         dispatch(getuser(postProfileData?.user))
+    //         dispatch(getProfile(postProfileData?.user))
+    //         dispatch(getProfileImage(postProfileData?.user))
+    //         setTimeout(() => {
+    //             // navigate("/");
+    //             removeLocalStorage('access_token')
+    //             removeLocalStorage('refresh_token')
+    //             removeLocalStorage('user_id')
+    //             window.location.href = "/login"
+    //         }, 1000)
+    //     }
+    // }, [postProfileData])
     useEffect(() => {
-        if (postProfileData != null) {
-            dispatch(getuser(postProfileData?.user))
-            dispatch(getProfile(postProfileData?.user))
-            dispatch(getProfileImage(postProfileData?.user))
-            setTimeout(() => {
-                // navigate("/");
-                removeLocalStorage('access_token')
-                removeLocalStorage('refresh_token')
-                removeLocalStorage('user_id')
-                window.location.href = "/login"
-            }, 1000)
+        if (profileDone){
+            if (!!profileImage?.name?.length && !!idDocument?.name?.length && profileData.height && profileData.weight && profileData.marital_status && profileData.headline && profileData.caste && profileData.occupation && profileData.education && profileData.income && profileData.about_me){
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: profileData
+                }
+                axios(Api.profilePost, requestOptions)
+                .then((response) => {
+                    setTimeout(() => {
+                        removeLocalStorage('access_token')
+                        removeLocalStorage('refresh_token')
+                        removeLocalStorage('user_id')
+                        window.location.href = "/login"
+                    }, 1000)
+                })
+                .catch((error) => {
+                })
+            }
         }
-    }, [postProfileData])
+    })
 
     const handleProfilePersonalInfo = (e) => {
         const { name, value } = e.target;
@@ -61,6 +88,33 @@ const ProfileUserDetail = () => {
                 [name]: name === "weight" ? +value : name === "height" ? +value : value
             }
         })
+    }
+
+    const profileImageSave = async (image)=>{
+        const formData = new FormData();
+        formData.append('image', image);
+        formData.append("user", getLocalStorage("user_id"))
+        const requestOptions = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        };
+        axios.post(Api.profileImage, formData, requestOptions)
+            .then((response) => {
+                toastify(toast.success, 'Profile photo uploaded successfully.')
+                setProfileDone(true)
+            })
+            .catch((error) => {
+                setProfileDone(false)
+                if(error.response.data.user){
+                    toastify(toast.error, error.response.data.user[0])
+                }
+                else{
+                    toastify(toast.error, error.response.data.detail)
+                }
+            })
     }
 
     const handleProfleInfo = (e) => {
@@ -85,12 +139,19 @@ const ProfileUserDetail = () => {
         // && profileData.occupation?.length > 4 &&
         // console.log('profileData>>>', profileData)
 
-        if (
-            !!profileImage?.name?.length && !!idDocument?.name?.length && profileData.height && profileData.weight && profileData.marital_status && profileData.headline && profileData.caste && profileData.occupation && profileData.education && profileData.income && profileData.about_me) {
-            dispatch(uploadProfileImage(profileImage))
-            dispatch(ProfilePost(profileData))
-        } else {
+        // if (
+        //     !!profileImage?.name?.length && !!idDocument?.name?.length && profileData.height && profileData.weight && profileData.marital_status && profileData.headline && profileData.caste && profileData.occupation && profileData.education && profileData.income && profileData.about_me) {
+        //     dispatch(uploadProfileImage(profileImage))
+        //     dispatch(ProfilePost(profileData))
+        // } else {
+        //     setError(true)
+        // }
+        if (!(profileImage) || !(idDocument) || !(profileData.height) || !(profileData.weight) || !(profileData.marital_status) || !(profileData.headline) || !(profileData.caste) || !(profileData.occupation) || !(profileData.education) || !(profileData.income) || !(profileData.about_me)){
             setError(true)
+            return;
+        }
+        if (!!profileImage?.name?.length){
+            profileImageSave(profileImage)
         }
     }
     const handleProfileImage = (e) => {
