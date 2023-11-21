@@ -46,7 +46,7 @@ const MemberShip = () => {
                                             {item.description}
                                         </div>
                                         <div className="last-button">
-                                            <button type="button" onClick={() => handlePayment(item)}> All Promises</button>
+                                            <button type="button" onClick={() => handlePayment(item)}> Upgrade</button>
                                         </div>
                                     </div>
                                 </div>

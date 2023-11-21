@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import News from "../components/News";
 import Layout from "../Layout";
+import ChatBot from '../components/ChatBot'
 
 
 
@@ -18,6 +19,7 @@ const Feed = () => {
         {/* <Features /> */}
         {/* <Skew /> */}
         {/* <News /> */}
+        <ChatBot/>
       </Layout>
     </div>
   );
