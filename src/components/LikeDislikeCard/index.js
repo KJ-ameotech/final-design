@@ -48,6 +48,8 @@ const LikeDislikeCard = () => {
     }, [])
 
     useEffect(() => {
+        setAllProfilesData([]);
+        setWait(false)
         console.log('advanceSearchRes>>>', advanceSearchRes, 'allSearchData>>>', allSearchData, 'allProfile>>>', allProfile)
         if (!!advanceSearchRes?.length) {
             setAllProfilesData(advanceSearchRes)
@@ -86,6 +88,8 @@ const LikeDislikeCard = () => {
         if (classId) setFrame(classId)
     }, [frame])
     useEffect(() => {
+        document.getElementById("fram").innerHTML = '';
+        setCurrent(null);
         if (allProfilesData?.length > 0) {
             allProfilesData.forEach((_data, index) => appendCard(_data, index))
             let getChild = frame?.querySelector('.card:last-child')
@@ -495,7 +499,7 @@ const LikeDislikeCard = () => {
                                             Please try again later</b>}
                                     </div>
                                 </>}
-                            <div class="frame"></div>
+                            <div class="frame" id="fram"></div>
                             {allProfilesData?.length > 0 ?
                                 <>
                                     <div class="icons" id="icns">

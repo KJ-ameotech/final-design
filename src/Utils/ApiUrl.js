@@ -1,7 +1,7 @@
-export let baseUrl = "http://127.0.0.1:8000";
+// export let baseUrl = "http://127.0.0.1:8000";
 // export let chatBaseUrl = "http://127.0.0.1:8001";
 
-// export let baseUrl = "http://139.84.135.154";
+export let baseUrl = "http://139.84.135.154";
 export let chatBaseUrl = "http://139.84.144.57";
 export let chatPortUrl = "ws://139.84.144.57:8001/ws/";
 

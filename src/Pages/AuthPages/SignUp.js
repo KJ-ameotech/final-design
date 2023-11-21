@@ -23,6 +23,7 @@ const SignUp = () => {
         dobMonth: "",
         religion: "",
         community: "",
+        family_name: "",
         living_in: "",
         username: "",
         email: "",
@@ -56,6 +57,10 @@ const SignUp = () => {
         if (name === "community") {
             const item = communitiesData?.filter(item => item.name === value)[0]
             dispatch(getFamilyNames(item.id))
+        }
+        if (name === "family_name") {
+            const item = familyNameData?.filter(item => item.name === value)[0]
+            dispatch(getReligion(item.id))
         }
         setRegister((prev) => {
             return {

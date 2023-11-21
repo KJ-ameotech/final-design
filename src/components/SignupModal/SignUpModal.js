@@ -38,7 +38,7 @@ const SignUpModal = ({ religionData, modalShow, handleRegister, communitiesData,
                     </div>
 
                     <div className="col-lg-12 col-md-12 col-sm-6 form-group ">
-                        <select className="custom-select-box" name="familyName" tabindex="9" required id="family" onChange={(e) => handleRegister(e)}>
+                        <select className="custom-select-box" name="family_name" tabindex="9" required id="family" onChange={(e) => handleRegister(e)}>
                             <option value="" disabled selected hidden>Family Name</option>
                             {!!familyNameData?.length && familyNameData.map((item) => {
                                 return (
