@@ -71,26 +71,32 @@ const SignUp = () => {
     }
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!!register.email?.length && !!register.password?.length && register.community && register.confirm_password && register.living_in && register.mobile_number && register.password && register.religion && register.username && register.first_name && register.last_name) {
-            if (!validEmail(register.email) && !validPassword(register.password) && register.mobile_number?.length !== 10 && !userNameValidation(register.username)) {
-                setError(true)
-            } else {
-                if (!validEmail(register.email)) {
-                    setError(true)
-                } else if (!validPassword(register.password)) {
-                    setError(true)
-                } else if (register.mobile_number?.length !== 10) {
-                    setError(true)
-                } else if (!userNameValidation(register.username)) {
+        let checkbox = document.getElementById('agree-terms');
+        if (checkbox.checked){
+            if (!!register.email?.length && !!register.password?.length && register.community && register.confirm_password && register.living_in && register.mobile_number && register.password && register.religion && register.username && register.first_name && register.last_name) {
+                if (!validEmail(register.email) && !validPassword(register.password) && register.mobile_number?.length !== 10 && !userNameValidation(register.username)) {
                     setError(true)
                 } else {
-                    dispatch(registerUser(register))
+                    if (!validEmail(register.email)) {
+                        setError(true)
+                    } else if (!validPassword(register.password)) {
+                        setError(true)
+                    } else if (register.mobile_number?.length !== 10) {
+                        setError(true)
+                    } else if (!userNameValidation(register.username)) {
+                        setError(true)
+                    } else {
+                        dispatch(registerUser(register))
+                    }
                 }
+            } else {
+                setError(true)
             }
-        } else {
-            setError(true)
+            setTimeout(() => setError(false), 5000)
         }
-        setTimeout(() => setError(false), 5000)
+        else{
+            alert('Accept the privacy policy')
+        }
     }
     const handleLookingFor = (item) => {
         if (item.looking !== "My Self") {
@@ -316,7 +322,7 @@ const SignUp = () => {
 
                                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                                         <div className="btn-box">
-                                                            <div className="text"><input type="checkbox" tabindex="10" style={{ verticalAlign: "text-bottom" }} />  I have read and agree to the <a href="#" target={"_blank"}><u>terms, conditions</u></a> and <a href="#" target={"_blank"}><u>  privacy policy.</u> </a></div>
+                                                            <div className="text"><input type="checkbox" id='agree-terms' tabindex="10" style={{ verticalAlign: "text-bottom" }} />  I have read and agree to the <a href="#" target={"_blank"}><u>terms, conditions</u></a> and <a href="#" target={"_blank"}><u>  privacy policy.</u> </a></div>
                                                         </div>
                                                         <a><button className="btn btn-primary mt-4 mb-4" type="submit" name="submit" style={{ width: "100%" }}> <span tabindex="11" className="btn-title">Register  </span></button></a>
                                                     </div>

@@ -33,39 +33,46 @@ const Login = () => {
     }
     const handleSumbit = (e) => {
         e.preventDefault()
-        if (((!!loginData.text?.length) && !!loginData.password?.length)) {
-            // const location = window.navigator && window.navigator.geolocation;
-            // if (location) {
-            // location.getCurrentPosition((position) => {
-            const long = "77.250473"
-            const lat = "28.675377"
-            if (validEmail(loginData.text)) {
-                const obj = {
-                    email: loginData.text,
-                    password: loginData.password,
-                    latitude: lat,
-                    longitude: long,
+        let checkbox = document.getElementById('agree-terms');
+        if (checkbox.checked){
+            if (((!!loginData.text?.length) && !!loginData.password?.length)) {
+                // const location = window.navigator && window.navigator.geolocation;
+                // if (location) {
+                // location.getCurrentPosition((position) => {
+                const long = "77.250473"
+                const lat = "28.675377"
+                if (validEmail(loginData.text)) {
+                    const obj = {
+                        email: loginData.text,
+                        password: loginData.password,
+                        latitude: lat,
+                        longitude: long,
+                    }
+                    dispatch(loginUser(obj))
+                } else if (userNameValidation(loginData.text)) {
+                    const obj = {
+                        username: loginData.text,
+                        password: loginData.password,
+                        latitude: lat,
+                        longitude: long,
+                    }
+                    dispatch(loginUser(obj))
+                } else {
+                    console.log('+++++++++=')
+                    setError(true)
                 }
-                dispatch(loginUser(obj))
-            } else if (userNameValidation(loginData.text)) {
-                const obj = {
-                    username: loginData.text,
-                    password: loginData.password,
-                    latitude: lat,
-                    longitude: long,
-                }
-                dispatch(loginUser(obj))
-            } else {
-                setError(true)
+                // }, (error) => {
+                //     alert("Please allow navigation");
+                // })
+                // }
+                // } else {
+                //     setError(true)
+                // }
+                setTimeout(() => setError(false), 5000)
             }
-            // }, (error) => {
-            //     alert("Please allow navigation");
-            // })
-            // }
-            // } else {
-            //     setError(true)
-            // }
-            setTimeout(() => setError(false), 5000)
+        }
+        else{
+            alert('Accept the privacy policy')
         }
     }
 
@@ -157,6 +164,7 @@ const Login = () => {
                                                         <input
                                                             type="checkbox"
                                                             style={{ verticalAlign: `middle` }}
+                                                            id='agree-terms'
                                                         />
                                                     </label>
                                                     I Agree{" "}

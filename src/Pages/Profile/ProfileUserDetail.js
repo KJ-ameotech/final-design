@@ -245,7 +245,7 @@ const ProfileUserDetail = () => {
                                 </div>
 
                                 <div className="col-md-6 form-group">
-                                    <input type="number" name="weight" maxlength="70" placeholder="Weight" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
+                                    <input type="number" name="weight" maxlength="70" placeholder="Weight(Kg)" tabindex="4" onChange={(e) => handleProfilePersonalInfo(e)} />
                                     <p className="form-text " style={{ color: "red" }}>{(!profileData.weight && error) ? "Weight is Required" : ((profileData.weight + "").length == 1 && error) ? "Invalid Weight." : ""}</p>
                                 </div>
                                 <div className="col-md-6 form-group">
